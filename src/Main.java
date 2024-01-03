@@ -1,10 +1,19 @@
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /*
@@ -40,9 +49,15 @@ public class Main extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rokovi");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
 
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -50,11 +65,12 @@ public class Main extends javax.swing.JFrame {
 
         jComboBox1.setBackground(new java.awt.Color(255, 255, 255));
         jComboBox1.setForeground(new java.awt.Color(0, 0, 0));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-", "8", "15", "8 + 8", "30" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-", "8", "15", "8 + 8", "30", "90", "-8", "-30" }));
 
         jButton2.setBackground(new java.awt.Color(255, 255, 255));
+        jButton2.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jButton2.setForeground(new java.awt.Color(0, 0, 0));
-        jButton2.setText("Ispiši");
+        jButton2.setText("Izračunaj");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -64,6 +80,18 @@ public class Main extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("sansserif", 0, 48)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        jDateChooser1.setDateFormatString("dd.MM.yyyy");
+        jDateChooser1.setFocusable(false);
+        jDateChooser1.setRequestFocusEnabled(false);
+        jDateChooser1.setVerifyInputWhenFocusTarget(false);
+
+        jButton1.setText("Info");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -75,11 +103,13 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(36, 36, 36))
@@ -92,9 +122,11 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(57, 57, 57)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -117,39 +149,53 @@ public class Main extends javax.swing.JFrame {
             options, options[0]);
     }
     
-    private void Provjera(String DatumZaProvjeru, LocalDate noviDatum){
-        String[] Praznici = {"1-1",
-            "6-1",
-            "4-4", //USKRS MIJENJA SE
-            "5-4", //MIJENJA SE
-            "1-5",
-            "30-5",
-            "3-6", //TJELOVO
-            "22-6",
-            "5-8",
-            "15-8",
-            "1-11",
-            "18-11",
-            "25-12",
-            "26-12"
-        };
+    private void Info(String err){
+        Object[] options = {"U redu"};
+        int izbor = javax.swing.JOptionPane.showOptionDialog(this,
+            err,
+            "  - Info -  ",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.INFORMATION_MESSAGE, null,
+            options, options[0]);
+    }
+    
+    private void Provjera(String DatumZaProvjeru, LocalDate noviDatum, boolean minus){
+        List<String> Praznici = new LinkedList<>();
+        try {
+            Praznici = Files.readAllLines(Paths.get("praznici.txt"));
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         DayOfWeek dan = noviDatum.getDayOfWeek();
         for (String praznik : Praznici) {
             if(DatumZaProvjeru.equals(praznik)){
-                LocalDate plusJedan = noviDatum.plusDays(1);
+                LocalDate plusJedan;
+                if(minus){
+                    plusJedan = noviDatum.minusDays(1);
+                }
+                else {
+                    plusJedan = noviDatum.plusDays(1);
+                }
                 int novidan = plusJedan.getDayOfMonth();
                 int novimjesec = plusJedan.getMonthValue();
                 String NoviDatumZaProvjeru = String.valueOf(novidan) + "-" + String.valueOf(novimjesec);
-                Provjera(NoviDatumZaProvjeru, plusJedan);
+                Provjera(NoviDatumZaProvjeru, plusJedan, minus);
                 break;
             }
         }
         if((dan == DayOfWeek.SATURDAY) || (dan == DayOfWeek.SUNDAY)){
-            LocalDate plusJedan = noviDatum.plusDays(1);
+            LocalDate plusJedan;
+            if(minus){
+                plusJedan = noviDatum.minusDays(1);
+            }
+            else {
+                plusJedan = noviDatum.plusDays(1);
+            }
             int novidan = plusJedan.getDayOfMonth();
             int novimjesec = plusJedan.getMonthValue();
             String NoviDatumZaProvjeru = String.valueOf(novidan) + "-" + String.valueOf(novimjesec);
-            Provjera(NoviDatumZaProvjeru, plusJedan);
+            Provjera(NoviDatumZaProvjeru, plusJedan, minus);
         }
         datum.add(noviDatum);
     }
@@ -166,35 +212,32 @@ public class Main extends javax.swing.JFrame {
             LocalDate ldt = datum.toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
-            if(jComboBox1.getSelectedIndex() != 3){
+            if(jComboBox1.getSelectedIndex() > 5) {
+                //minus rokovi
                 String x = String.valueOf(jComboBox1.getSelectedItem());
-                int rok = Integer.parseInt(x);
-                LocalDate noviDatum = ldt.plusDays(rok);
-                int dan = noviDatum.getDayOfMonth();
-                int mjesec = noviDatum.getMonthValue();
-                String DatumZaProvjeru = String.valueOf(dan) + "-" + String.valueOf(mjesec);
-                //Provjera zadnjeg dana roka
-                Provjera(DatumZaProvjeru, noviDatum);
-                LocalDate DanRoka = this.datum.get(0);
-                this.datum.clear();
+                String bezMinusa = x.substring(1);
+                int rok = Integer.parseInt(bezMinusa);
+                LocalDate noviDatum = ldt.minusDays(rok);
+                
                 //Provjera valjanosti rijesenja
-                LocalDate IduciDan = DanRoka.plusDays(1);
+                LocalDate IduciDan = noviDatum.minusDays(1);
                 int danValjanosti = IduciDan.getDayOfMonth();
                 int mjesecValjanosti = IduciDan.getMonthValue();
                 String DatumValjanosti = String.valueOf(danValjanosti) + "-" + String.valueOf(mjesecValjanosti);
-                Provjera(DatumValjanosti, IduciDan);
+                Provjera(DatumValjanosti, IduciDan, true);
                 LocalDate DatumZaIspis = this.datum.get(0);
                 this.datum.clear();
                 String Datum = DatumZaIspis.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 jLabel3.setText(Datum);
             }
-            else{
+            else if(jComboBox1.getSelectedIndex() == 3){
+                //8 + 8
                 LocalDate noviDatum = ldt.plusDays(8);
                 int dan = noviDatum.getDayOfMonth();
                 int mjesec = noviDatum.getMonthValue();
                 String DatumZaProvjeru = String.valueOf(dan) + "-" + String.valueOf(mjesec);
                 //Provjera prvih 8 dana
-                Provjera(DatumZaProvjeru, noviDatum);
+                Provjera(DatumZaProvjeru, noviDatum, false);
                 LocalDate DanRoka1 = this.datum.get(0);
                 this.datum.clear();
                 LocalDate DanRoka2 = DanRoka1.plusDays(8);
@@ -202,14 +245,43 @@ public class Main extends javax.swing.JFrame {
                 int mjesec2 = DanRoka2.getMonthValue();
                 String DatumZaProvjeru2 = String.valueOf(dan2) + "-" + String.valueOf(mjesec2);
                 //Provjera drugih 8 dana
-                Provjera(DatumZaProvjeru2, DanRoka2);
+                Provjera(DatumZaProvjeru2, DanRoka2, false);
                 LocalDate GotovRok = this.datum.get(0);
                 this.datum.clear();
                 LocalDate IduciDan = GotovRok.plusDays(1);
                 int danValjanosti = IduciDan.getDayOfMonth();
                 int mjesecValjanosti = IduciDan.getMonthValue();
                 String DatumValjanosti = String.valueOf(danValjanosti) + "-" + String.valueOf(mjesecValjanosti);
-                Provjera(DatumValjanosti, IduciDan);
+                Provjera(DatumValjanosti, IduciDan, false);
+                LocalDate DatumZaIspis = this.datum.get(0);
+                this.datum.clear();
+                String Datum = DatumZaIspis.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                jLabel3.setText(Datum);
+            }
+            else if (jComboBox1.getSelectedIndex() == 5){
+                //90
+                LocalDate noviDatum = ldt.plusDays(89);
+                String Datum = noviDatum.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                jLabel3.setText(Datum);
+            }
+            else{
+                //obicni rokovi
+                String x = String.valueOf(jComboBox1.getSelectedItem());
+                int rok = Integer.parseInt(x);
+                LocalDate noviDatum = ldt.plusDays(rok);
+                int dan = noviDatum.getDayOfMonth();
+                int mjesec = noviDatum.getMonthValue();
+                String DatumZaProvjeru = String.valueOf(dan) + "-" + String.valueOf(mjesec);
+                //Provjera zadnjeg dana roka
+                Provjera(DatumZaProvjeru, noviDatum, false);
+                LocalDate DanRoka = this.datum.get(0);
+                this.datum.clear();
+                //Provjera valjanosti rijesenja
+                LocalDate IduciDan = DanRoka.plusDays(1);
+                int danValjanosti = IduciDan.getDayOfMonth();
+                int mjesecValjanosti = IduciDan.getMonthValue();
+                String DatumValjanosti = String.valueOf(danValjanosti) + "-" + String.valueOf(mjesecValjanosti);
+                Provjera(DatumValjanosti, IduciDan, false);
                 LocalDate DatumZaIspis = this.datum.get(0);
                 this.datum.clear();
                 String Datum = DatumZaIspis.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
@@ -217,6 +289,41 @@ public class Main extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        // TODO add your handling code here:
+        jButton2.requestFocus();
+    }//GEN-LAST:event_formWindowActivated
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(jComboBox1.getSelectedIndex() == 0){
+            Info("Niste odabrali rok");
+        }
+        String rok = jComboBox1.getSelectedItem().toString();
+        switch(rok){
+            case "8":
+                Info("Rok je 8 dana od dana izabranog na kalendaru.\n8. dan roka ne smije biti vikend/praznik, mora biti radni dan.\nAplikacija kao rezultat pokazuje prvi sljedeci radni dan nakon 8. dana roka.");
+                break;
+            case "15":
+                Info("Rok je 15 dana od dana izabranog na kalendaru.\n15. dan roka ne smije biti vikend/praznik, mora biti radni dan.\nAplikacija kao rezultat pokazuje prvi sljedeci radni dan nakon 15. dana roka.");
+                break;
+            case "8 + 8":
+                Info("Rok je 8 dana i nakon toga jos 8 dana od dana izabranog na kalendaru.\nKod racunanja prvih 8 dana, 8. dan roka ne smije biti vikend/praznik, mora biti radni dan.\nNakon sto se izracuna prvih 8 dana roka racuna se drugih 8 dana, gdje takoder 8. dan roka ne smije biti vikend/praznik.\nAplikacija kao rezultat prikazuje prvi radni dan nakon drugog 8. dana roka.");
+                break;
+            case "30":
+                Info("Rok je 30 dana od dana izabranog na kalendaru.\n30. dan roka ne smije biti vikend/praznik, mora biti radni dan.\nAplikacija kao rezultat pokazuje prvi sljedeci radni dan nakon 30. dana roka.");
+                break;
+            case "90":
+                Info("Rok je 90 dana od dana izabranog na kalendaru.\n90. dan roka smije biti vikend/praznik.\nAplikacija kao rezultat prikazuje zadnji, odnosno 90. dan roka.");
+                break;
+            case "-8":
+                Info("Rok je -8 dana od dana izabranog na kalendaru.\nProgram vrti dane unazad za 8 dana.\nUnazad 8. dan roka ne smije biti vikend/praznik, mora biti radni dan.\nAplikacija kao rezultat pokazuje prvi prijasnji radni dan prije 8. dana roka.");
+                break;
+            case "-30":
+                Info("Rok je -30 dana od dana izabranog na kalendaru.\nProgram vrti dane unazad za 30 dana.\nUnazad 30. dan roka ne smije biti vikend/praznik, mora biti radni dan.\nAplikacija kao rezultat pokazuje prvi prijasnji radni dan prije 30. dana roka.");
+                break;
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -254,6 +361,7 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboBox1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
